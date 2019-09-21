@@ -61,6 +61,7 @@ const typeDefs = gql`
   type Query {
     runway: runway
     sleepPattern: JSON
+    stuffs: JSON
   }
 `;
 
@@ -81,7 +82,14 @@ const resolvers = {
         .ref("sleepPattern")
         .once("value");
       const val = result.val();
-      console.log(val);
+      return val;
+    },
+    stuffs: async () => {
+      const result = await admin
+        .database()
+        .ref("stuff")
+        .once("value");
+      const val = result.val();
       return val;
     }
   }
