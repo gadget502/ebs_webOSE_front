@@ -19,6 +19,7 @@ admin.initializeApp({
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   scalar JSON
+
   type Door {
     uid: String
     isLocked: Boolean
@@ -46,11 +47,18 @@ const typeDefs = gql`
     weather: Boolean
   }
 
+  type youtube {
+    vid: String
+    play: Boolean
+  }
+
   type runway {
     user: String
     Door: Door
     alarm: alarm
     mirror: mirror
+    fcmToken: String
+    youtube: youtube
   }
 
   type time {
@@ -61,6 +69,11 @@ const typeDefs = gql`
   type Query {
     runway: runway
     sleepPattern: JSON
+    stuffs: JSON
+  }
+
+  type Subscription {
+    alarm: alarm
     stuffs: JSON
   }
 `;
@@ -95,7 +108,33 @@ const resolvers = {
   }
 };
 
-// setup express cloud function
+const stuffRef = admin.database().ref("stuff");
+const alarmfRef = admin.database().ref("alarm");
+
+stuffRef.on(
+  "value",
+  function(snapshot) {
+    console.log(snapshot.val());
+  },
+  function(errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  }
+);
+
+alarmfRef.on("value", snp => {
+  console.log(snp.val());
+}),
+  err => {};
+
+alarmfRef.on("child_added", function(snapshot, prevChildKey) {
+  console.log(snapshot.val());
+});
+
+alarmfRef.on("child_removed", function(snapshot) {
+  var deletedPost = snapshot.val();
+  console.log("The blog post titled '", deletedPost, "' has been deleted");
+});
+
 const app = express();
 const server = new ApolloServer({ typeDefs, resolvers });
 server.applyMiddleware({ app, path: "/", cors: true });
