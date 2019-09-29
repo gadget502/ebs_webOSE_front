@@ -17,7 +17,7 @@ import Alarm from "../components/Alarm";
 import Youtube from "../components/Youtube";
 
 const client = new ApolloClient({
-  uri: "http://localhost:5000/runway-249610/us-central1/graphql"
+  uri: "http://175.193.196.36:5000/runway-249610/us-central1/graphql"
 });
 
 const App = kind({

@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment-timezone";
 import style from "./css/clock.less";
 
 function currentTime() {
@@ -8,7 +9,9 @@ function currentTime() {
   let s = today.getSeconds();
   m = checkTime(m);
   s = checkTime(s);
-  return h + ":" + m + ":" + s;
+  return moment()
+    .tz("Asia/Seoul")
+    .format("HH:mm:ss");
 }
 function checkTime(i) {
   if (i < 10) {

@@ -56,7 +56,7 @@ class Stuff extends React.Component {
     return (
       <div id="alarm-wrapper">
         <div>
-          이 물건들은 잊지말고 꼭 챙기세요!
+          <h1>이 물건들은 잊지말고 꼭 챙기세요!</h1>
           <BodyText id="stuff">{this.state.stuff}</BodyText>
         </div>
       </div>
