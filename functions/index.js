@@ -5,6 +5,7 @@ const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const GraphQLJSON = require("graphql-type-json");
 const service = require("./service.json");
+const moment = require('moment-timezone');
 
 admin.initializeApp({
   databaseURL: "https://runway-249610.firebaseio.com",
@@ -59,6 +60,7 @@ const typeDefs = gql`
     mirror: mirror
     fcmToken: String
     youtube: youtube
+    triggered: Boolean
   }
 
   type time {
@@ -66,15 +68,33 @@ const typeDefs = gql`
     start: String
   }
 
+  input Pattern {
+    deep: Int
+    light: Int
+    non: Int
+  }
+
   type Query {
+    test(test: String): String
     runway: runway
     sleepPattern: JSON
     stuffs: JSON
   }
 
+  type Mutation {
+    test(test: String!): String!
+    updateSleepPattern(pattern: Pattern): JSON
+  }
+  
+
   type Subscription {
     alarm: alarm
     stuffs: JSON
+  }
+
+  schema {
+    query: Query
+    mutation: Mutation
   }
 `;
 
@@ -104,8 +124,23 @@ const resolvers = {
         .once("value");
       const val = result.val();
       return val;
-    }
-  }
+    },
+
+    test: ({test}) =>{
+      return test;
+    },
+  },
+  Mutation: {
+     updateSleepPattern: async (parent, {pattern}) => {
+      const data = await moment().tz("Asia/Seoul").format("YYYYMMDD");
+      const {deep, light, non} = pattern;
+      await admin.database().ref('sleepPattern'+"/"+data).set({deep, light, non});
+      return {data: {deep, light, non}, database: 'sleepPattern'+"/"+data} 
+    },
+    test: (root, {test}) =>{
+      return {name: test};
+    },
+  },
 };
 
 const stuffRef = admin.database().ref("stuff");
